@@ -62,22 +62,28 @@ bool SpriteApp::Update(float frame_time)
 
 	int num_controllers = input_manager_->controller_input()->GetDS5ControllerCount();
 
-	auto controller1 = input_manager_->controller_input()->GetController(0);
+	// Get additional controllers from GetController(NUM);
+	auto controller = input_manager_->controller_input()->GetController(0);
 
-	if(controller1)
+	const gef::SonyController* controller_p2 = NULL;
+	if (num_controllers > 1)
+		controller_p2 = input_manager_->controller_input()->GetController(1);
+
+
+	if(controller)
 	{
 		
 		// Getting the button name from an Array
-		float log_buttons = log2(controller1->buttons_down());
-		if(controller1->buttons_down() != 0)
+		float log_buttons = log2(controller->buttons_down());
+		if(controller->buttons_down() != 0)
 			key_name_ = button_names[(int)log_buttons];
 
 		
 		// Get angle from stick position
 		gef::Vector2 up(0,1);
 		gef::Vector2 stick_pos;
-		stick_pos.x = controller1->left_stick_x_axis();
-		stick_pos.y = controller1->left_stick_y_axis();
+		stick_pos.x = controller->left_stick_x_axis();
+		stick_pos.y = controller->left_stick_y_axis();
 
 		stick_pos.Normalise();
 
@@ -88,7 +94,7 @@ bool SpriteApp::Update(float frame_time)
 
 
 		// Set Controller Output data
-		gef::ControllerOutputData out_data = controller1->get_output_data();
+		gef::ControllerOutputData out_data = controller->get_output_data();
 
 		out_data.lightbar = gef::Colour(0.5, 0 ,0.5);
 
@@ -97,17 +103,19 @@ bool SpriteApp::Update(float frame_time)
 		out_data.left_trigger_effect.Section.endPosition= 0.4;
 		out_data.left_trigger_effect.Continuous.force = 0.5;
 
-		out_data.left_rumble = controller1->get_left_trigger()+ controller1->get_right_trigger();
+		out_data.left_rumble = controller->get_left_trigger()+ controller->get_right_trigger();
 
-		out_data.right_rumble = controller1->get_touch_position().y > 100 ? (controller1->get_touch_position().y -100) / 1048.f: 0;
+		out_data.right_rumble = controller->get_touch_position().y > 100 ? (controller->get_touch_position().y -100) / 1048.f: 0;
 
 
 
-		controller1->set_output_data(out_data);
+		controller->set_output_data(out_data);
 
-		//key_name_ = std::to_string(angle);
 
-		//key_name_ = std::to_string(controller->left_stick_y_axis());
+		// Get Gyroscope and Accelerator as vector4 -- Gyro is raw data
+		auto accel = controller->get_accelerometer();
+		auto gyro = controller->get_gyroscope();
+		
 
 	}
 
