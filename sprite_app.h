@@ -65,6 +65,9 @@ private:
 	gef::Sprite my_sprite_;
 
 	std::string key_name_;
+
+	float yaxisval;
+	float xaxisval;
 };
 
 #endif // _sprite_app_H

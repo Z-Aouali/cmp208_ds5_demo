@@ -7,7 +7,9 @@
 #include <input/input_manager.h>
 #include "input/sony_controller_input_manager.h"
 #include "graphics/colour.h"
+#include <iostream>
 
+using std::cout;
 
 SpriteApp::SpriteApp(gef::Platform& platform) :
 	Application(platform),
@@ -69,7 +71,8 @@ bool SpriteApp::Update(float frame_time)
 	if (num_controllers > 1)
 		controller_p2 = input_manager_->controller_input()->GetController(1);
 
-
+	yaxisval = controller->right_stick_y_axis();
+	xaxisval = controller->right_stick_x_axis();
 	if(controller)
 	{
 		
@@ -101,7 +104,7 @@ bool SpriteApp::Update(float frame_time)
 		out_data.left_trigger_effect.effectType = gef::ControllerOutputData::TriggerEffectType::SectionResitance;
 		out_data.left_trigger_effect.Section.startPosition = 0.2;
 		out_data.left_trigger_effect.Section.endPosition= 0.4;
-		out_data.left_trigger_effect.Continuous.force = 0.5;
+		//out_data.left_trigger_effect.Continuous.force = 0.5;
 
 		out_data.left_rumble = controller->get_left_trigger()+ controller->get_right_trigger();
 
@@ -117,7 +120,13 @@ bool SpriteApp::Update(float frame_time)
 		auto gyro = controller->get_gyroscope();
 		
 
+
+
 	}
+
+	cout << "y axis: " << yaxisval << std::endl;
+
+	cout << "x axis: " << xaxisval << std::endl;
 
 	return true;
 }
@@ -173,6 +182,15 @@ void SpriteApp::DrawHUD()
 			0xffffffff,								// colour ABGR
 			gef::TJ_LEFT,							// justification
 			key_name_.c_str()
+		);
+
+		font_->RenderText(
+			sprite_renderer_,
+			gef::Vector4(100.f, 100.f, -0.9f),
+			1.0f,
+			0xffffffff,
+			gef::TJ_LEFT,
+			std::to_string(yaxisval).c_str()
 		);
 	}
 
